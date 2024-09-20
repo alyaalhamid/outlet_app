@@ -1,6 +1,9 @@
 # outlet_app
 
-A new Flutter project.
+![image](https://github.com/user-attachments/assets/93656250-c91d-4093-acff-3599d6e8e0e7)
+![image](https://github.com/user-attachments/assets/35829e12-bdef-4705-8303-9701d9df3278)
+
+
 
 ## Getting Started
 
