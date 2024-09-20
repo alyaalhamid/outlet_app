@@ -1,6 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:outlet_app/ServiceMarket.dart';
 
-class market extends StatelessWidget {
+class market extends StatefulWidget {
+  const market({super.key});
+
+  @override
+  State<market> createState() => _marketState();
+}
+
+class _marketState extends State<market> {
+  List<Map<String, dynamic>> _market = [];
+
+  bool _isloading = true;
+
+  bool _isEdit = true;
+
+  void _refreshMarket() async {
+    final data = await marketHelper.getAllItem();
+    setState(() {
+      _market = data;
+      _isloading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _refreshMarket();
+    print('..number of item ${_market.length}');
+  }
+
+  TextEditingController _namestore = TextEditingController();
+  TextEditingController _address = TextEditingController();
+
+  Future<void> _addItem() async {
+    await marketHelper.createItem(_namestore.text, _address.text);
+    _refreshMarket();
+    print('..number of item ${_market.length}');
+  }
+
+  void _form(int? id) async {
+    if (id != null) {
+      final extingmarket =
+          _market.firstWhere((element) => element['market_code'] == id);
+      _namestore.text = extingmarket['market_name'];
+      _address.text = extingmarket['market_address'];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +96,7 @@ class market extends StatelessWidget {
                             border: Border.all(color: Colors.black)),
                         height: 40,
                         child: TextFormField(
+                          controller: _namestore,
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               contentPadding:
@@ -67,6 +116,7 @@ class market extends StatelessWidget {
                             border: Border.all(color: Colors.black)),
                         height: 100,
                         child: TextFormField(
+                          controller: _address,
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.only(left: 10),
@@ -84,7 +134,13 @@ class market extends StatelessWidget {
                       ),
                       Center(
                           child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          _form(null);
+                          await _addItem();
+
+                          _namestore.text = '';
+                          _address.text = '';
+                        },
                         child: Text('SAVE MARKET'),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF00C4D6),
@@ -118,46 +174,57 @@ class market extends StatelessWidget {
                         SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/warung-madura.jpeg',
-                              height: 150,
-                              width: 150,
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Warung Madura',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    'MARKET_202222_0001',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
+                        Expanded(
+                          child: ListView.builder(
+                              itemCount: _market.length,
+                              itemBuilder: (context, index) => Card(
+                                    color: Colors.amber,
+                                    margin: EdgeInsets.all(5),
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/warung-madura.jpeg',
+                                          height: 150,
+                                          width: 150,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _market[index]['market_name'],
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                'MARKET_${_market[index]['created_date']}_000${_market[index]['market_code'].toString()}',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              Text(
+                                                _market[index]
+                                                    ['market_address'],
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Text(
-                                    'JL.Cinangneng No 10 RT 003/RW 005 Bandung,Jawa Barat 1111',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
+                                  )),
                         )
                       ],
                     ),
