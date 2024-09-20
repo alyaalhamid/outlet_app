@@ -178,7 +178,6 @@ class _marketState extends State<market> {
                           child: ListView.builder(
                               itemCount: _market.length,
                               itemBuilder: (context, index) => Card(
-                                    color: Colors.amber,
                                     margin: EdgeInsets.all(5),
                                     child: Row(
                                       children: [
